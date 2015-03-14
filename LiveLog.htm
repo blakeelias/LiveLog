@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LiveLog</title>
+</head>
+<body>
+<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script> 
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+
+<link rel="stylesheet" href="demos.css">
+<link rel="stylesheet" href="http://jqueryui.com/themes/base/jquery.ui.all.css">
+<script>
+	var searchTerm = '';
+	var entries = [];
+	var displayedEntriesInd = [];
+	var actualLines = {};
+
+  	 function findTags(entriesArg, tag) {
+		 if(tag.length <=0) 
+		 	return entriesArg;
+
+		 var out = [];
+
+		 
+		 for (p in entriesArg) {
+			//alert(txt[p])
+		 	if(entriesArg[p].indexOf(tag)>=0)
+				out.push(p);
+		 }
+			 /*
+		 while(offs<txt.length) {
+			 start=txt.indexOf("#"+tag,offs)
+			 if (start<0) break ;
+			 end= txt.indexOf("\n",start)
+			 if (end<0) end=txt.length
+			 //alert(start + " " + end)
+			 out=out+txt.substring(start,end)+"\n"
+			 offs=end+1
+		 }*/
+		 //alert(out)
+		 return out
+	 }
+
+	entries.indexFilter = function (entryIndexList) {
+		var outArray = [];
+
+		for (i in entryIndexList) {
+			outArray.push(this[entryIndexList[i]]);
+		}
+		return outArray;
+	}
+
+	function displayFilteredEntries(entriesArg, whichInd) {
+		$('#log').val(entriesArg.indexFilter(whichInd).join('\n'));
+	}
+
+
+
+
+	function setCookie(cname, cvalue, exdays) {
+		if(cvalue.constructor===Array)
+			cvalue=JSON.stringify(cvalue);
+
+		var d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		var expires = "expires="+d.toUTCString();
+		document.cookie = cname + "=" + cvalue + "; " + expires;
+	}
+
+	function getCookie(cname) {
+		var name = cname + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1);
+			if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+		}
+		return "";
+	}
+
+
+	$(document).ready(function(){
+ 		$("#se").keyup(function(e) {
+			searchTerm = $('#se').val();
+			displayedEntriesInd = findTags(entries, searchTerm);
+			displayFilteredEntries(entries, displayedEntriesInd);
+			document.cookie = ;
+		});
+
+		$("#log").keyup(function(e) {
+
+		 	if (!searchTerm) {
+				entries = $("#log").val().split('\n');
+			} else {
+				var displayedEntries = $("#log").val().split('\n');
+				for (i in displayedEntries) {
+					entries[actualLines[i]] = displayedEntries[i];
+				}
+				displayFilteredEntries(entries);
+				// TODO: allow entering newlines
+			}
+		});
+		
+     });
+
+
+   </script>
+<script>
+	$(function() {
+		var availableTags = [
+			"ActionScript",
+			"AppleScript",
+			"Asp",
+			"BASIC",
+			"C",
+			"C++",
+			"Clojure",
+			"COBOL",
+			"ColdFusion",
+			"Erlang",
+			"Fortran",
+			"Groovy",
+			"Haskell",
+			"Java",
+			"JavaScript",
+			"Lisp",
+			"Perl",
+			"PHP",
+			"Python",
+			"Ruby",
+			"Scala",
+			"Scheme"
+		];
+		$( "#se" ).autocomplete({
+			source: availableTags,
+			minLength: 0
+		});
+		
+		$( "#se" ).autocomplete( "search" , "" )
+	});
+	</script>
+
+
+<div class="demo">
+
+<div class="ui-widget">
+	<label for="tags">Search Tags: <br>
+	</label>
+	<input type="text" id="se" size="150"  />
+</div>
+
+</div><!-- End demo -->
+
+<br>
+<br>
+<br>
+<br />
+<input type="hidden" id="logh" />
+<input type="hidden" id="tagsh" />
+<textarea cols="150" rows="30" id="log"></textarea>
+
+
+
+	
+
+
+
+
+
+</body>
+</html>
